@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wi-Fi Control</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Full Page Setup */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #007bff, #00d4ff);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Floating Animated Circles */
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            animation: float 10s infinite ease-in-out;
+        }
+
+        .circle.small {
+            width: 50px;
+            height: 50px;
+            bottom: 20%;
+            left: 10%;
+            animation-duration: 6s;
+        }
+
+        .circle.medium {
+            width: 100px;
+            height: 100px;
+            top: 10%;
+            right: 15%;
+            animation-duration: 12s;
+        }
+
+        .circle.large {
+            width: 150px;
+            height: 150px;
+            bottom: 5%;
+            right: 10%;
+            animation-duration: 8s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-30px) translateX(20px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Card Container */
+        .card {
+            background-color: #ffffff;
+            color: #333;
+            border-radius: 20px;
+            padding: 40px 60px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 500px;
+            z-index: 10;
+        }
+
+        .card h1 {
+            font-size: 2.5rem;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        /* Circular Buttons */
+        .btn-control {
+            font-size: 1.5rem;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 10px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-control i {
+            font-size: 2.5rem;
+        }
+
+        .btn-control:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #wifiOffBtn {
+            background-color: #dc3545;
+        }
+
+        #wifiOnBtn {
+            background-color: #28a745;
+        }
+
+        #wifiOffBtn:hover {
+            background-color: #c82333;
+        }
+
+        #wifiOnBtn:hover {
+            background-color: #218838;
+        }
+
+        /* Alert Message Styling */
+        #statusMessage {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Floating Graphics -->
+    <div class="circle small"></div>
+    <div class="circle medium"></div>
+    <div class="circle large"></div>
+
+    <!-- Card Content -->
+    <div class="card">
+        <h1>Wi-Fi Control</h1>
+        <button id="wifiOffBtn" class="btn btn-control">
+            <i class="fas fa-lock"></i>
+        </button>
+        <button id="wifiOnBtn" class="btn btn-control">
+            <i class="fas fa-unlock"></i>
+        </button>
+        <div id="statusMessage"></div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        async function sendWifiCommand(action) {
+            try {
+                const response = await fetch(`/wifi/${action}`, { method: 'POST' });
+                const data = await response.json();
+                alert(data.status);
+                document.getElementById('statusMessage').innerText = data.status;
+            } catch (error) {
+                alert("An error occurred while changing Wi-Fi status.");
+                document.getElementById('statusMessage').innerText = "An error occurred.";
+            }
+        }
+
+        // Wi-Fi Off Button
+        document.getElementById('wifiOffBtn').addEventListener('click', () => {
+            sendWifiCommand('off');
+        });
+
+        // Wi-Fi On Button
+        document.getElementById('wifiOnBtn').addEventListener('click', () => {
+            sendWifiCommand('on');
+        });
+    </script>
+
+</body>
+</html>

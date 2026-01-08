@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internet Speed Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="static/style2.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="header">FAST</h1>
+        <h2>Your Internet speed is</h2>
+        <div class="speed">
+            <div class="boxs">
+               <p> <span id="download-speed">0</span> Mbps <span class="unit"></span></p>
+            </div>
+        </div>
+        <div class="output-section">
+            <div class="latency">
+                <h2>Latency</h2>
+                <div class="boxs">
+                    <p><span id="latency">0</span> ms</p>
+                </div>
+            </div>
+            <div class="upload">
+                <h2>Upload Speed</h2>
+                <div class="boxs">
+                    <p><span id="upload-speed">0</span> Mbps</p>
+                </div>
+            </div>
+        </div>
+        <button id="speedTestButton">Run Speed Test</button><br><br><br><br><br>
+
+        <h3>Previous Speed Tests</h3>
+        <canvas id="speedChart" width="400" height="200"></canvas>
+    </div>
+
+    <script>
+        let speedHistory = {
+            labels: [],
+            download: [],
+            upload: []
+        };
+
+        const ctx = document.getElementById('speedChart').getContext('2d');
+        const speedChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: speedHistory.labels,
+                datasets: [{
+                    label: 'Download Speed (Mbps)',
+                    data: speedHistory.download,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 3,
+                    fill: false
+                }, {
+                    label: 'Upload Speed (Mbps)',
+                    data: speedHistory.upload,
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 3,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        document.getElementById('speedTestButton').addEventListener('click', runSpeedTest);
+
+        function runSpeedTest() {
+            fetch('http://127.0.0.1:5000/speedtest1')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('download-speed').innerText = data.download;
+                    document.getElementById('latency').innerText = data.latency;
+                    document.getElementById('upload-speed').innerText = data.upload;
+
+                    const currentTime = new Date().toLocaleTimeString();
+                    speedHistory.labels.push(currentTime);
+                    speedHistory.download.push(data.download);
+                    speedHistory.upload.push(data.upload);
+
+                    speedChart.update();
+                })
+                .catch(error => {
+                    console.error('Error fetching speed test data:', error);
+                    alert('Failed to fetch speed test data');
+                });
+        }
+    </script>
+</body>
+</html>
